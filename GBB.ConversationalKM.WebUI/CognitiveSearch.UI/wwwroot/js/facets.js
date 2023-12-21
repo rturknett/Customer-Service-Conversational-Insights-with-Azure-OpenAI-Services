@@ -130,6 +130,11 @@ function UpdateFacets() {
 
 }
 
+// Remove undesirable results from the facet data
+function cleanFacetData(data) {
+    return data.filter(item => item.value.toString().length < 100 && item.value.toString().length > 0 && item.value.toString() != "None");
+}
+
 function UpdateAccordion() {
     $("#facet-nav").html("");
 
@@ -176,18 +181,15 @@ function UpdateAccordion() {
                 <div class="accordion-body panel-scroll">`;
             }
 
-            if (data !== null) {
-                for (var j = 0; j < data.length; j++) {
-                    if (data[j].value.toString().length < 100 && data[j].value.toString().length > 0 && data[j].value.toString() != "None") {
-                        facetResultsHTML += `<div class="ms-CheckBox">
-                                            <input tabindex="-1" type="checkbox" class="ms-CheckBox-input" onclick="ChooseFacet('${name}','${data[j].value}', '${j}');">
-                                            <label id="${name}_${j}" role="checkbox" class="ms-CheckBox-field" tabindex="0" aria-checked="false" name="checkboxa">
-                                                <span class="ms-Label">${data[j].value} (${data[j].count})</span> 
-                                            </label>
-                                        </div>`;
-                    }
-                }
-            }
+            var cleanedFacetData = cleanFacetData(data);
+            cleanedFacetData.forEach(function (item) {
+                facetResultsHTML += `<div class="ms-CheckBox">
+                                    <input tabindex="-1" type="checkbox" class="ms-CheckBox-input" onclick="ChooseFacet('${name}','${item.value}', '${index}');">
+                                    <label id="${name}_${index}" role="checkbox" class="ms-CheckBox-field" tabindex="0" aria-checked="false" name="checkboxa">
+                                        <span class="ms-Label">${item.value} (${item.count})</span> 
+                                    </label>
+                                </div>`;
+                    });
 
             facetResultsHTML += `</div>
                                 </div>
